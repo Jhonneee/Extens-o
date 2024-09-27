@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gráfico de Pizza - Totais</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 50px;
+        }
+        canvas {
+            max-width: 600px;
+            margin: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Gráfico de Pizza - Totais de Salários e Itens</h1>
+    <canvas id="myChart"></canvas>
+
+    <script>
+        async function fetchTotals() {
+            const response = await fetch('http://localhost:3000/total');
+            if (!response.ok) {
+                throw new Error('Erro ao obter dados');
+            }
+            return await response.json();
+        }
+
+        async function createChart() {
+            try {
+                const data = await fetchTotals();
+
+                const ctx = document.getElementById('myChart').getContext('2d');
+                const myChart = new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: ['Salários', 'Itens'],
+                        datasets: [{
+                            label: 'Total',
+                            data: [data.totalSalaries, data.totalItems],
+                            backgroundColor: [
+                                'rgba(54, 162, 235, 0.6)', // Cor para Salários
+                                'rgba(255, 99, 132, 0.6)'   // Cor para Itens
+                            ],
+                            borderColor: [
+                                'rgba(54, 162, 235, 1)',
+                                'rgba(255, 99, 132, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            },
+                            title: {
+                                display: true,
+                                text: 'Total de Salários e Itens'
+                            }
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error(error);
+                alert('Erro ao carregar os dados do gráfico.');
+            }
+        }
+
+        createChart();
+    </script>
+</body>
+</html>
